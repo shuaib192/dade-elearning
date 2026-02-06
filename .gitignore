@@ -1,0 +1,33 @@
+# Database & Config
+config/config.php
+config/database.php
+
+# Uploads & Media
+uploads/lessons/videos/*
+uploads/lessons/attachments/*
+uploads/avatars/*
+uploads/courses/*
+!uploads/.gitkeep
+
+# Logs & Temp
+logs/*
+.DS_Store
+Thumbs.db
+*.log
+learning/php_errorlog
+learning/.DS_Store
+assets/.DS_Store
+views/.DS_Store
+**/node_modules
+**/vendor
+**/lib
+
+# XAMPP/Environment specific
+.htaccess
+.env
+learning/.htaccess
+learning/config/database.php
+learning/google_config.php
+learning/google_auth.php
+learning/logins.php
+learning/kk.html

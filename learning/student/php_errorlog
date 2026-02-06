@@ -1,0 +1,60 @@
+[23-Oct-2025 10:15:27 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'created_at' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/quiz_result.php:77
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/quiz_result.php(77): mysqli->prepare('\n              ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/quiz_result.php on line 77
+[23-Oct-2025 10:16:18 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'created_at' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/quiz_result.php:82
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/quiz_result.php(82): mysqli->prepare('\n              ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/quiz_result.php on line 82
+[23-Oct-2025 10:28:20 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'c.thumbnail' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:12
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(12): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 12
+[23-Oct-2025 10:28:48 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'c.thumbnail' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:12
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(12): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 12
+[23-Oct-2025 10:28:49 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'c.thumbnail' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:12
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(12): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 12
+[23-Oct-2025 10:28:50 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'c.thumbnail' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:12
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(12): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 12
+[23-Oct-2025 10:28:55 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'c.thumbnail' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:17
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(17): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 17
+[23-Oct-2025 10:29:41 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'c.thumbnail' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:16
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(16): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 16
+[23-Oct-2025 10:29:43 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'c.thumbnail' in 'field list' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:16
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(16): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 16
+[23-Oct-2025 10:30:58 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'lp.status' in 'on clause' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:16
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(16): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 16
+[23-Oct-2025 10:31:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'lp.status' in 'on clause' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:16
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(16): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 16
+[23-Oct-2025 10:31:43 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'lp.status' in 'on clause' in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php:16
+Stack trace:
+#0 /home/customer/www/learning.dadefoundation.com/public_html/student/index.php(16): mysqli->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in /home/customer/www/learning.dadefoundation.com/public_html/student/index.php on line 16
