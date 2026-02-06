@@ -125,7 +125,12 @@ class AuthController {
             $errors[] = 'Passwords do not match.';
         }
         
-        if (!in_array($role, ['volunteer', 'mentor'])) {
+        // Handle instructor applications
+        $instructorPending = 0;
+        if ($role === 'mentor') {
+            $role = 'volunteer';  // Start as student (volunteer), pending approval
+            $instructorPending = 1;
+        } elseif (!in_array($role, ['student', 'volunteer', 'mentor'])) {
             $role = 'volunteer';
         }
         
@@ -152,18 +157,26 @@ class AuthController {
         $firstName = $parts[0];
         $lastName = $parts[1] ?? 'User';
         
-        $stmt = $this->db->prepare("
-            INSERT INTO users (username, first_name, last_name, email, password, role, verification_token, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
-        ");
-        $stmt->bind_param("sssssss", $username, $firstName, $lastName, $email, $hashedPassword, $role, $verificationToken);
+        // Build query based on instructor application
+        if ($instructorPending) {
+            $stmt = $this->db->prepare("
+                INSERT INTO users (username, first_name, last_name, email, password, role, verification_token, instructor_pending, instructor_applied_at, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())
+            ");
+            $stmt->bind_param("sssssss", $username, $firstName, $lastName, $email, $hashedPassword, $role, $verificationToken);
+        } else {
+            $stmt = $this->db->prepare("
+                INSERT INTO users (username, first_name, last_name, email, password, role, verification_token, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            ");
+            $stmt->bind_param("sssssss", $username, $firstName, $lastName, $email, $hashedPassword, $role, $verificationToken);
+        }
         
         if ($stmt->execute()) {
             $userId = $this->db->insert_id;
             
             // Send verification email
-            $verifyUrl = SITE_URL . '/verify-email?token=' . $verificationToken;
-            Mail::sendVerification($email, $username, $verifyUrl);
+            Mail::sendVerification($email, $username, $verificationToken);
             
             // Auto login the user
             $user = [
@@ -175,7 +188,11 @@ class AuthController {
             ];
             Auth::loginUser($user);
             
-            Session::flash('success', 'Account created successfully! Please check your email to verify your account.');
+            if ($instructorPending) {
+                Session::flash('success', 'Account created! Your instructor application is pending admin approval. You can start learning while you wait.');
+            } else {
+                Session::flash('success', 'Account created successfully! Please check your email to verify your account.');
+            }
             Router::redirect('dashboard');
         } else {
             Session::flash('error', 'An error occurred. Please try again.');
@@ -512,5 +529,38 @@ class AuthController {
         } else {
             Router::redirect('login');
         }
+    }
+    /**
+     * Resend Verification Email
+     */
+    public function resendVerification() {
+        Auth::requireLogin();
+        
+        $user = Auth::user();
+        if ($user['email_verified'] == 1) {
+            Session::flash('info', 'Your email is already verified.');
+            Router::redirect('dashboard');
+            return;
+        }
+        
+        // Check if we already have a token, if not generate one
+        $token = $user['verification_token'];
+        if (empty($token)) {
+            $token = Auth::generateToken();
+            $stmt = $this->db->prepare("UPDATE users SET verification_token = ? WHERE id = ?");
+            $stmt->bind_param("si", $token, $user['id']);
+            $stmt->execute();
+        }
+        
+        $verifyUrl = SITE_URL . '/verify-email?token=' . $token;
+        $result = Mail::sendVerification($user['email'], $user['username'], $token);
+        
+        if ($result === true) {
+            Session::flash('success', 'A new verification link has been sent to your email.');
+        } else {
+            Session::flash('error', 'Failed to send verification email. Please try again later.');
+        }
+        
+        Router::redirect('dashboard');
     }
 }

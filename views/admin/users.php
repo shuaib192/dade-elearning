@@ -46,6 +46,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Router::redirect('admin/users');
         return;
     }
+    
+    // Approve instructor application
+    if ($action === 'approve_instructor' && $targetUserId) {
+        $stmt = $db->prepare("
+            UPDATE users SET 
+                role = 'instructor', 
+                instructor_pending = 0, 
+                instructor_approved_at = NOW(),
+                instructor_approved_by = ?
+            WHERE id = ? AND instructor_pending = 1
+        ");
+        $stmt->bind_param("ii", $user['id'], $targetUserId);
+        if ($stmt->execute()) {
+            Session::flash('success', 'Instructor application approved!');
+        }
+        Router::redirect('admin/users?tab=pending');
+        return;
+    }
+    
+    // Reject instructor application
+    if ($action === 'reject_instructor' && $targetUserId) {
+        $stmt = $db->prepare("UPDATE users SET instructor_pending = 0 WHERE id = ?");
+        $stmt->bind_param("i", $targetUserId);
+        if ($stmt->execute()) {
+            Session::flash('success', 'Instructor application rejected.');
+        }
+        Router::redirect('admin/users?tab=pending');
+        return;
+    }
 }
 
 // Build query
@@ -66,55 +95,26 @@ while ($row = $result->fetch_assoc()) {
     $users[] = $row;
 }
 
+// Get pending instructor applications
+$pendingInstructors = [];
+$pendingResult = $db->query("SELECT * FROM users WHERE instructor_pending = 1 ORDER BY instructor_applied_at DESC");
+while ($row = $pendingResult->fetch_assoc()) {
+    $pendingInstructors[] = $row;
+}
+$pendingCount = count($pendingInstructors);
+
+// Current tab
+$currentTab = $_GET['tab'] ?? 'all';
+
 require_once APP_ROOT . '/views/layouts/header.php';
+$activePage = 'users';
 ?>
 
-<div class="dashboard-layout">
-    <!-- Sidebar -->
-    <aside class="dashboard-sidebar">
-        <div class="sidebar-user">
-            <img src="<?php echo avatar($user, 80); ?>" alt="<?php echo e($user['username']); ?>" class="sidebar-avatar">
-            <h4 class="sidebar-username"><?php echo e($user['username']); ?></h4>
-            <span class="sidebar-role admin-badge">
-                <i class="fas fa-shield-alt"></i> Administrator
-            </span>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <a href="<?php echo url('admin'); ?>" class="sidebar-link">
-                <i class="fas fa-chart-pie"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="<?php echo url('admin/users'); ?>" class="sidebar-link active">
-                <i class="fas fa-users"></i>
-                <span>Users</span>
-            </a>
-            <a href="<?php echo url('admin/courses'); ?>" class="sidebar-link">
-                <i class="fas fa-book"></i>
-                <span>Courses</span>
-            </a>
-            <a href="<?php echo url('admin/categories'); ?>" class="sidebar-link">
-                <i class="fas fa-folder"></i>
-                <span>Categories</span>
-            </a>
-            <a href="<?php echo url('admin/analytics'); ?>" class="sidebar-link">
-                <i class="fas fa-chart-line"></i>
-                <span>Analytics</span>
-            </a>
-            <a href="<?php echo url('admin/badges'); ?>" class="sidebar-link">
-                <i class="fas fa-award"></i>
-                <span>Badges</span>
-            </a>
-            <div class="sidebar-divider"></div>
-            <a href="<?php echo url('dashboard'); ?>" class="sidebar-link">
-                <i class="fas fa-home"></i>
-                <span>My Dashboard</span>
-            </a>
-        </nav>
-    </aside>
+<div class="admin-container">
+    <?php require_once APP_ROOT . '/views/admin/partials/sidebar.php'; ?>
     
     <!-- Main Content -->
-    <main class="dashboard-main">
+    <main class="admin-main">
         <div class="dashboard-header">
             <div class="welcome-text">
                 <h1>👤 User Management</h1>
@@ -130,11 +130,66 @@ require_once APP_ROOT . '/views/layouts/header.php';
         
         <!-- Filters -->
         <div class="filters-bar">
-            <a href="<?php echo url('admin/users'); ?>" class="filter-btn <?php echo !$roleFilter ? 'active' : ''; ?>">All</a>
+            <a href="<?php echo url('admin/users'); ?>" class="filter-btn <?php echo $currentTab === 'all' && !$roleFilter ? 'active' : ''; ?>">All</a>
+            <a href="<?php echo url('admin/users?tab=pending'); ?>" class="filter-btn <?php echo $currentTab === 'pending' ? 'active' : ''; ?>">
+                <i class="fas fa-hourglass-half"></i> Pending Instructors
+                <?php if ($pendingCount > 0): ?>
+                <span class="badge-count"><?php echo $pendingCount; ?></span>
+                <?php endif; ?>
+            </a>
             <a href="<?php echo url('admin/users?role=volunteer'); ?>" class="filter-btn <?php echo $roleFilter === 'volunteer' ? 'active' : ''; ?>">Students</a>
-            <a href="<?php echo url('admin/users?role=mentor'); ?>" class="filter-btn <?php echo $roleFilter === 'mentor' ? 'active' : ''; ?>">Instructors</a>
+            <a href="<?php echo url('admin/users?role=instructor'); ?>" class="filter-btn <?php echo $roleFilter === 'instructor' ? 'active' : ''; ?>">Instructors</a>
             <a href="<?php echo url('admin/users?role=admin'); ?>" class="filter-btn <?php echo $roleFilter === 'admin' ? 'active' : ''; ?>">Admins</a>
         </div>
+        
+        <?php if ($currentTab === 'pending'): ?>
+        <!-- Pending Instructor Applications -->
+        <div class="pending-section">
+            <div class="section-header">
+                <h2><i class="fas fa-user-clock"></i> Pending Instructor Applications</h2>
+                <p>Users who have applied to become instructors</p>
+            </div>
+            
+            <?php if (empty($pendingInstructors)): ?>
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h3>No Pending Applications</h3>
+                <p>All instructor applications have been processed.</p>
+            </div>
+            <?php else: ?>
+            <div class="pending-grid">
+                <?php foreach ($pendingInstructors as $pi): ?>
+                <div class="pending-card">
+                    <div class="pending-user">
+                        <img src="<?php echo avatar($pi, 60); ?>" alt="" class="pending-avatar">
+                        <div class="pending-info">
+                            <h4><?php echo e($pi['username'] ?? $pi['first_name'] . ' ' . $pi['last_name']); ?></h4>
+                            <span><?php echo e($pi['email']); ?></span>
+                            <small>Applied: <?php echo date('M d, Y', strtotime($pi['instructor_applied_at'] ?? $pi['created_at'])); ?></small>
+                        </div>
+                    </div>
+                    <div class="pending-actions">
+                        <form action="" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="approve_instructor">
+                            <input type="hidden" name="user_id" value="<?php echo $pi['id']; ?>">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                        </form>
+                        <form action="" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="reject_instructor">
+                            <input type="hidden" name="user_id" value="<?php echo $pi['id']; ?>">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+        <?php else: ?>
         
         <!-- Users Table -->
         <div class="table-card">
@@ -185,7 +240,6 @@ require_once APP_ROOT . '/views/layouts/header.php';
             </table>
         </div>
         
-        <!-- Pagination -->
         <?php if ($totalPages > 1): ?>
         <div class="pagination">
             <?php for ($p = 1; $p <= $totalPages; $p++): ?>
@@ -195,6 +249,7 @@ require_once APP_ROOT . '/views/layouts/header.php';
             </a>
             <?php endfor; ?>
         </div>
+        <?php endif; ?>
         <?php endif; ?>
     </main>
 </div>
@@ -418,6 +473,63 @@ require_once APP_ROOT . '/views/layouts/header.php';
     color: #059669;
     border: 1px solid #a7f3d0;
 }
+
+/* Pending Instructors Section */
+.pending-section { margin-bottom: var(--space-6); }
+.section-header { margin-bottom: var(--space-6); }
+.section-header h2 { font-size: var(--text-xl); display: flex; align-items: center; gap: var(--space-3); }
+.section-header h2 i { color: #f59e0b; }
+.section-header p { color: var(--text-muted); margin-top: var(--space-2); }
+
+.pending-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-5);
+}
+
+.pending-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid var(--gray-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.pending-user { display: flex; align-items: center; gap: var(--space-4); }
+.pending-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #f59e0b; }
+.pending-info h4 { margin-bottom: var(--space-1); }
+.pending-info span { font-size: var(--text-sm); color: var(--text-muted); display: block; }
+.pending-info small { font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-1); display: block; }
+
+.pending-actions { display: flex; gap: var(--space-2); }
+.btn-success { background: #10b981; color: white; border: none; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); cursor: pointer; display: inline-flex; align-items: center; gap: var(--space-2); }
+.btn-success:hover { background: #059669; }
+
+.badge-count {
+    background: #dc2626;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: var(--space-2);
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--space-12);
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-100);
+}
+.empty-state i { font-size: 48px; color: #10b981; margin-bottom: var(--space-4); }
+.empty-state h3 { margin-bottom: var(--space-2); }
+.empty-state p { color: var(--text-muted); }
+
 </style>
 
 <!-- Delete Confirmation Modal -->

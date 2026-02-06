@@ -9,6 +9,12 @@ $db = getDB();
 $user = Auth::user();
 $userId = $user['id'];
 
+// Enforce email verification
+if (!Auth::isVerified()) {
+    require_once APP_ROOT . '/views/auth/verify-notice.php';
+    exit;
+}
+
 // Get instructor stats
 $stats = [
     'courses' => 0,

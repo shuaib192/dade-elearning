@@ -190,6 +190,24 @@ $currentRoute = Router::currentRoute();
         </div>
     </header>
     
+    <!-- Email Verification Banner -->
+    <?php if (Auth::check() && !Auth::isVerified()): ?>
+    <div class="verification-banner">
+        <div class="container">
+            <div class="v-banner-content">
+                <i class="fas fa-envelope-open-text"></i>
+                <p>Please verify your email address to access all features. <a href="<?php echo url('resend-verification'); ?>">Resend verification email</a></p>
+            </div>
+        </div>
+    </div>
+    <style>
+    .verification-banner { background: #fef3c7; border-bottom: 1px solid #fde68a; padding: 10px 0; color: #92400e; font-size: 14px; }
+    .v-banner-content { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .v-banner-content i { font-size: 18px; color: #d97706; }
+    .v-banner-content a { font-weight: 700; text-decoration: underline; color: #b45309; }
+    </style>
+    <?php endif; ?>
+    
     <!-- Mobile Menu Overlay -->
     <div class="menu-overlay" id="menuOverlay"></div>
     

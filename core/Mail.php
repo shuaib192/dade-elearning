@@ -36,44 +36,53 @@ class Mail {
             $mail->Password = SMTP_PASS;
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port = SMTP_PORT;
+
+            // Extra robust settings for local/shared servers
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            );
+            $mail->Timeout = 10;
             
             // Recipients
             $mail->setFrom(SMTP_USER, SMTP_FROM_NAME);
             $mail->addAddress($to);
             
-            // CC
+            // CC/BCC
             if (isset($options['cc'])) {
-                foreach ((array)$options['cc'] as $cc) {
-                    $mail->addCC($cc);
-                }
+                foreach ((array)$options['cc'] as $cc) $mail->addCC($cc);
             }
-            
-            // BCC
             if (isset($options['bcc'])) {
-                foreach ((array)$options['bcc'] as $bcc) {
-                    $mail->addBCC($bcc);
-                }
+                foreach ((array)$options['bcc'] as $bcc) $mail->addBCC($bcc);
             }
-            
-            // Attachments
             if (isset($options['attachments'])) {
-                foreach ((array)$options['attachments'] as $attachment) {
-                    $mail->addAttachment($attachment);
-                }
+                foreach ((array)$options['attachments'] as $attachment) $mail->addAttachment($attachment);
             }
             
             // Content
             $mail->isHTML(true);
             $mail->Subject = $subject;
-            $mail->Body = self::wrapInTemplate($body, $subject);
+            $mail->Body    = self::wrapInTemplate($body, $subject);
             $mail->AltBody = strip_tags($body);
             
             $mail->send();
             return true;
             
         } catch (Exception $e) {
-            error_log("Mail Error: " . $mail->ErrorInfo);
-            return $mail->ErrorInfo;
+            error_log("SMTP Error: " . $mail->ErrorInfo);
+            
+            // Fallback to native PHP mail()
+            try {
+                $mail->isMail();
+                $mail->send();
+                return true;
+            } catch (Exception $e2) {
+                error_log("Mail Fallback Error: " . $mail->ErrorInfo);
+                return $mail->ErrorInfo;
+            }
         }
     }
     

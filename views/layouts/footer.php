@@ -101,6 +101,9 @@
     <!-- Scripts -->
     <script src="<?php echo asset('js/main.js'); ?>"></script>
     <script src="<?php echo asset('js/accessibility.js'); ?>"></script>
+    <?php if (Auth::check()): ?>
+    <script src="<?php echo asset('js/ai-assistant.js'); ?>"></script>
+    <?php endif; ?>
     <?php if (isset($pageScripts)): ?>
     <script><?php echo $pageScripts; ?></script>
     <?php endif; ?>

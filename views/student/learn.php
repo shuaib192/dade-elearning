@@ -9,6 +9,12 @@ $currentLessonId = $_GET['lesson'] ?? null;
 $db = getDB();
 $userId = Auth::id();
 
+// Enforce email verification
+if (!Auth::isVerified()) {
+    require_once APP_ROOT . '/views/auth/verify-notice.php';
+    exit;
+}
+
 // Get course details
 $stmt = $db->prepare("
     SELECT c.*, u.username as instructor_name, cat.name as category_name,

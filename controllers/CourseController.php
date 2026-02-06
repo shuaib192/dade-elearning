@@ -20,6 +20,12 @@ class CourseController {
             Router::redirect('courses');
             return;
         }
+
+        // Enforce email verification
+        if (!Auth::isVerified()) {
+            require_once APP_ROOT . '/views/auth/verify-notice.php';
+            return;
+        }
         
         $userId = Auth::id();
         

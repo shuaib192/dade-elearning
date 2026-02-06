@@ -76,3 +76,17 @@ CREATE TABLE IF NOT EXISTS `analytics_daily` (
 -- ========================================
 -- Run this SQL in phpMyAdmin
 -- ========================================
+
+-- ========================================
+-- INSTRUCTOR APPROVAL WORKFLOW
+-- ========================================
+
+-- 8. Add instructor_pending column to users table
+ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `instructor_pending` TINYINT(1) DEFAULT 0;
+ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `instructor_applied_at` DATETIME DEFAULT NULL;
+ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `instructor_approved_at` DATETIME DEFAULT NULL;
+ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `instructor_approved_by` INT DEFAULT NULL;
+
+-- Create index for faster lookups of pending instructors
+CREATE INDEX IF NOT EXISTS `idx_instructor_pending` ON `users` (`instructor_pending`);
+

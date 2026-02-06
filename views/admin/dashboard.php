@@ -49,62 +49,14 @@ while ($row = $result->fetch_assoc()) {
 }
 
 require_once APP_ROOT . '/views/layouts/header.php';
+$activePage = 'dashboard';
 ?>
 
-<div class="dashboard-layout">
-    <!-- Sidebar -->
-    <aside class="dashboard-sidebar">
-        <div class="sidebar-user">
-            <img src="<?php echo avatar($user, 80); ?>" alt="<?php echo e($user['username']); ?>" class="sidebar-avatar">
-            <h4 class="sidebar-username"><?php echo e($user['username']); ?></h4>
-            <span class="sidebar-role admin-badge">
-                <i class="fas fa-shield-alt"></i> Administrator
-            </span>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <a href="<?php echo url('admin'); ?>" class="sidebar-link active">
-                <i class="fas fa-chart-pie"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="<?php echo url('admin/users'); ?>" class="sidebar-link">
-                <i class="fas fa-users"></i>
-                <span>Users</span>
-            </a>
-            <a href="<?php echo url('admin/courses'); ?>" class="sidebar-link">
-                <i class="fas fa-book"></i>
-                <span>Courses</span>
-            </a>
-            <a href="<?php echo url('admin/categories'); ?>" class="sidebar-link">
-                <i class="fas fa-folder"></i>
-                <span>Categories</span>
-            </a>
-            <a href="<?php echo url('admin/analytics'); ?>" class="sidebar-link">
-                <i class="fas fa-chart-line"></i>
-                <span>Analytics</span>
-            </a>
-            <a href="<?php echo url('admin/badges'); ?>" class="sidebar-link">
-                <i class="fas fa-award"></i>
-                <span>Badges</span>
-            </a>
-            <a href="<?php echo url('admin/certificates'); ?>" class="sidebar-link">
-                <i class="fas fa-certificate"></i>
-                <span>Certificate Approvals</span>
-            </a>
-            <div class="sidebar-divider"></div>
-            <a href="<?php echo url('dashboard'); ?>" class="sidebar-link">
-                <i class="fas fa-home"></i>
-                <span>My Dashboard</span>
-            </a>
-            <a href="<?php echo url('instructor'); ?>" class="sidebar-link">
-                <i class="fas fa-chalkboard-teacher"></i>
-                <span>Instructor Panel</span>
-            </a>
-        </nav>
-    </aside>
+<div class="admin-container">
+    <?php require_once APP_ROOT . '/views/admin/partials/sidebar.php'; ?>
     
     <!-- Main Content -->
-    <div class="dashboard-main">
+    <div class="admin-main">
         <!-- Welcome Header -->
         <div class="dashboard-header">
             <div class="welcome-text">

@@ -135,6 +135,16 @@ Router::get('auth/google/callback', function() {
     (new AuthController())->googleCallback();
 });
 
+Router::get('resend-verification', function() {
+    require_once APP_ROOT . '/controllers/AuthController.php';
+    (new AuthController())->resendVerification();
+});
+
+Router::get('verify-email', function() {
+    require_once APP_ROOT . '/controllers/AuthController.php';
+    (new AuthController())->verifyEmail();
+});
+
 // --- Student Dashboard ---
 Router::get('dashboard', function() {
     Auth::requireLogin();
@@ -155,6 +165,12 @@ Router::get('dashboard/bookmarks', function() {
 Router::post('api/bookmark/toggle', function() {
     require_once APP_ROOT . '/controllers/BookmarkController.php';
     BookmarkController::toggle();
+});
+
+// AI Study Assistant API
+Router::post('api/ai/chat', function() {
+    require_once APP_ROOT . '/controllers/AiController.php';
+    (new AiController())->chat();
 });
 
 // Specific route MUST come first (with lesson ID)

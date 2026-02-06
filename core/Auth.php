@@ -108,6 +108,16 @@ class Auth {
     }
     
     /**
+     * Check if user email is verified
+     */
+    public static function isVerified() {
+        if (!self::check()) return false;
+        
+        $user = self::user();
+        return (isset($user['email_verified']) && $user['email_verified'] == 1);
+    }
+
+    /**
      * Log out the current user
      */
     public static function logout() {
