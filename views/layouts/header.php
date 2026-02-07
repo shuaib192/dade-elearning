@@ -23,7 +23,7 @@ $currentRoute = Router::currentRoute();
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Styles -->
     <link rel="stylesheet" href="<?php echo asset('css/main.css'); ?>">
@@ -121,6 +121,55 @@ $currentRoute = Router::currentRoute();
                     </a>
                     
                     <?php if (Auth::check()): ?>
+                        <!-- Notification Bell -->
+                        <?php 
+                            $unreadCount = Notification::countUnread(Auth::id()); 
+                            $notifications = Notification::getUnread(Auth::id(), 5);
+                        ?>
+                        <div class="notification-dropdown">
+                            <button class="notification-toggle" id="notificationDropdown">
+                                <i class="fas fa-bell"></i>
+                                <?php if ($unreadCount > 0): ?>
+                                    <span class="notification-badge"><?php echo $unreadCount; ?></span>
+                                <?php endif; ?>
+                            </button>
+                            <div class="notification-menu" id="notificationMenu">
+                                <div class="notification-header">
+                                    <h5>Notifications</h5>
+                                    <?php if ($unreadCount > 0): ?>
+                                        <a href="#" class="text-xs" style="color: var(--primary);" onclick="markAllRead(event)">Mark all read</a>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="notification-list">
+                                    <?php if (empty($notifications)): ?>
+                                        <div class="empty-notification">
+                                            <i class="far fa-bell-slash"></i>
+                                            <p>No new notifications</p>
+                                        </div>
+                                    <?php else: ?>
+                                        <?php foreach ($notifications as $notification): ?>
+                                            <div class="notification-item">
+                                                <div class="notification-icon">
+                                                    <?php if ($notification['type'] == 'success'): ?>
+                                                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                                    <?php elseif ($notification['type'] == 'error'): ?>
+                                                        <i class="fas fa-exclamation-circle" style="color: var(--error);"></i>
+                                                    <?php else: ?>
+                                                        <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="notification-content">
+                                                    <h6><?php echo e($notification['title']); ?></h6>
+                                                    <p><?php echo e($notification['message']); ?></p>
+                                                    <span class="notification-time"><?php echo timeAgo($notification['created_at']); ?></span>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- User Dropdown -->
                         <div class="user-dropdown">
                             <button class="user-dropdown-toggle" id="userDropdown">
@@ -316,18 +365,44 @@ $currentRoute = Router::currentRoute();
 
         // Use event delegation for dropdowns to be more robust
         document.addEventListener('click', function(e) {
-            const toggle = e.target.closest('#userDropdown');
-            const menu = document.getElementById('userDropdownMenu');
-            const parent = document.querySelector('.user-dropdown');
+            // User Dropdown
+            const userToggle = e.target.closest('#userDropdown');
+            const userParent = document.querySelector('.user-dropdown');
             
-            if (toggle) {
+            // Notification Dropdown
+            const notifToggle = e.target.closest('#notificationDropdown');
+            const notifParent = document.querySelector('.notification-dropdown');
+            
+            if (userToggle) {
                 e.preventDefault();
                 e.stopPropagation();
-                parent.classList.toggle('active');
-            } else if (parent && !parent.contains(e.target)) {
-                parent.classList.remove('active');
+                if (notifParent) notifParent.classList.remove('active');
+                if (userParent) userParent.classList.toggle('active');
+            } 
+            else if (notifToggle) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (userParent) userParent.classList.remove('active');
+                if (notifParent) notifParent.classList.toggle('active');
+            }
+            else {
+                if (userParent && !userParent.contains(e.target)) userParent.classList.remove('active');
+                if (notifParent && !notifParent.contains(e.target)) notifParent.classList.remove('active');
             }
         });
+        
+        // Mark all notifications as read
+        window.markAllRead = function(e) {
+            e.preventDefault();
+            fetch('<?php echo url('notifications/mark-all-read'); ?>')
+                .then(response => {
+                    window.location.reload();
+                })
+                .catch(err => {
+                    console.error('Error marking notifications as read', err);
+                    window.location.href = '<?php echo url('notifications/mark-all-read'); ?>';
+                });
+        };
     });
     </script>
     <style>

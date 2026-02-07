@@ -168,16 +168,18 @@ class CertificateController {
                 LEFT JOIN users i ON c.instructor_id = i.id
                 WHERE cert.certificate_code = ? OR cert.certificate_number = ? OR cert.id = ?
             ");
-            $stmt->bind_param("ssi", $query, $query, $query);
+            $stmt->bind_param("sss", $query, $query, $query);
             $stmt->execute();
             $cert = $stmt->get_result()->fetch_assoc();
             
             if (!$cert) {
-                $error = "Certificate not found with ID: " . e($query);
+                $error = "The Certificate ID " . e($query) . " is not correct or not authentic.";
             }
         }
         
-        require_once APP_ROOT . '/views/public/verify-certificate.php';
+        
+        // Use the view helper to pass variables cleanly
+        view('public.verify-certificate', ['cert' => $cert, 'error' => $error]);
     }
     
     /**

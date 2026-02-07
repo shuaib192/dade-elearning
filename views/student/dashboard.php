@@ -7,6 +7,13 @@
 $pageTitle = 'My Dashboard';
 $db = getDB();
 $user = Auth::user();
+
+// Redirect if not logged in
+if (!$user) {
+    Router::redirect('login');
+    exit;
+}
+
 $userId = $user['id'];
 
 // Get enrolled courses with progress
@@ -91,7 +98,7 @@ require_once APP_ROOT . '/views/layouts/header.php';
                 <i class="fas fa-search"></i>
                 <span>Browse Courses</span>
             </a>
-            <?php if (Auth::hasRole('mentor')): ?>
+            <?php if (Auth::hasRole('instructor')): ?>
             <a href="<?php echo url('instructor'); ?>" class="sidebar-link">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span>Instructor Panel</span>

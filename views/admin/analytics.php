@@ -43,8 +43,8 @@ $stats = [];
 // ---------------------------------------------------------------------------
 $stats['users'] = [
     'total' => $db->query("SELECT COUNT(*) as c FROM users")->fetch_assoc()['c'] ?? 0,
-    'students' => $db->query("SELECT COUNT(*) as c FROM users WHERE role IN ('student', 'volunteer')")->fetch_assoc()['c'] ?? 0,
-    'instructors' => $db->query("SELECT COUNT(*) as c FROM users WHERE role IN ('instructor', 'mentor')")->fetch_assoc()['c'] ?? 0,
+    'students' => $db->query("SELECT COUNT(*) as c FROM users WHERE role = 'student'")->fetch_assoc()['c'] ?? 0,
+    'instructors' => $db->query("SELECT COUNT(*) as c FROM users WHERE role = 'instructor'")->fetch_assoc()['c'] ?? 0,
     'admins' => $db->query("SELECT COUNT(*) as c FROM users WHERE role = 'admin'")->fetch_assoc()['c'] ?? 0,
     'verified_emails' => $db->query("SELECT COUNT(*) as c FROM users WHERE email_verified = 1")->fetch_assoc()['c'] ?? 0,
     'unverified_emails' => $db->query("SELECT COUNT(*) as c FROM users WHERE email_verified = 0 OR email_verified IS NULL")->fetch_assoc()['c'] ?? 0,

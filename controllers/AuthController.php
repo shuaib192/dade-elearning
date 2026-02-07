@@ -98,7 +98,7 @@ class AuthController {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $passwordConfirm = $_POST['password_confirm'] ?? '';
-        $role = $_POST['role'] ?? 'volunteer';
+        $role = $_POST['role'] ?? 'student';
         
         // Validation
         $errors = [];
@@ -127,11 +127,11 @@ class AuthController {
         
         // Handle instructor applications
         $instructorPending = 0;
-        if ($role === 'mentor') {
-            $role = 'volunteer';  // Start as student (volunteer), pending approval
+        if ($role === 'instructor') {
+            $role = 'student';  // Start as student, pending approval
             $instructorPending = 1;
-        } elseif (!in_array($role, ['student', 'volunteer', 'mentor'])) {
-            $role = 'volunteer';
+        } elseif (!in_array($role, ['student', 'instructor'])) {
+            $role = 'student';
         }
         
         // Check if email exists
@@ -322,7 +322,7 @@ class AuthController {
         } else {
             // Create new user
             $username = $googleUser['name'] ?? explode('@', $googleUser['email'])[0];
-            $role = 'volunteer';
+            $role = 'student';
             
             $stmt = $this->db->prepare("
                 INSERT INTO users (username, email, google_id, profile_picture, role, email_verified, created_at)

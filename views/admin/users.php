@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $targetUserId = intval($_POST['user_id'] ?? 0);
     
     if ($action === 'change_role' && $targetUserId) {
-        $newRole = $_POST['role'] ?? 'volunteer';
+        $newRole = $_POST['role'] ?? 'student';
         $stmt = $db->prepare("UPDATE users SET role = ? WHERE id = ?");
         $stmt->bind_param("si", $newRole, $targetUserId);
         if ($stmt->execute()) {
@@ -51,15 +51,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'approve_instructor' && $targetUserId) {
         $stmt = $db->prepare("
             UPDATE users SET 
-                role = 'instructor', 
+                role = ?, 
                 instructor_pending = 0, 
                 instructor_approved_at = NOW(),
                 instructor_approved_by = ?
             WHERE id = ? AND instructor_pending = 1
         ");
-        $stmt->bind_param("ii", $user['id'], $targetUserId);
+        $role = ROLE_INSTRUCTOR;
+        $stmt->bind_param("sii", $role, $user['id'], $targetUserId);
         if ($stmt->execute()) {
-            Session::flash('success', 'Instructor application approved!');
+            // Get user details for notification
+            $uStmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+            $uStmt->bind_param("i", $targetUserId);
+            $uStmt->execute();
+            $targetUser = $uStmt->get_result()->fetch_assoc();
+            
+            // Send Email
+            Mail::sendInstructorApproval($targetUser);
+            
+            // Create Dashboard Notification
+            Notification::create(
+                $targetUserId,
+                'Instructor Application Approved',
+                'Congratulations! Your application to become an instructor has been approved. You can now access the Instructor Panel.',
+                'success'
+            );
+            
+            Session::flash('success', 'Instructor application approved! User has been notified.');
         }
         Router::redirect('admin/users?tab=pending');
         return;
@@ -70,7 +88,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare("UPDATE users SET instructor_pending = 0 WHERE id = ?");
         $stmt->bind_param("i", $targetUserId);
         if ($stmt->execute()) {
-            Session::flash('success', 'Instructor application rejected.');
+            // Get user details for notification
+            $uStmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+            $uStmt->bind_param("i", $targetUserId);
+            $uStmt->execute();
+            $targetUser = $uStmt->get_result()->fetch_assoc();
+            
+            // Send Email
+            Mail::sendInstructorRejection($targetUser);
+            
+            // Create Dashboard Notification
+            Notification::create(
+                $targetUserId,
+                'Instructor Application Update',
+                'Your instructor application has been reviewed. Unfortunately, it was not approved at this time. Please check your email for more details.',
+                'info'
+            );
+            
+            Session::flash('success', 'Instructor application rejected. User has been notified.');
         }
         Router::redirect('admin/users?tab=pending');
         return;
@@ -137,7 +172,7 @@ $activePage = 'users';
                 <span class="badge-count"><?php echo $pendingCount; ?></span>
                 <?php endif; ?>
             </a>
-            <a href="<?php echo url('admin/users?role=volunteer'); ?>" class="filter-btn <?php echo $roleFilter === 'volunteer' ? 'active' : ''; ?>">Students</a>
+            <a href="<?php echo url('admin/users?role=student'); ?>" class="filter-btn <?php echo $roleFilter === 'student' ? 'active' : ''; ?>">Students</a>
             <a href="<?php echo url('admin/users?role=instructor'); ?>" class="filter-btn <?php echo $roleFilter === 'instructor' ? 'active' : ''; ?>">Instructors</a>
             <a href="<?php echo url('admin/users?role=admin'); ?>" class="filter-btn <?php echo $roleFilter === 'admin' ? 'active' : ''; ?>">Admins</a>
         </div>
@@ -218,8 +253,8 @@ $activePage = 'users';
                                 <input type="hidden" name="action" value="change_role">
                                 <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
                                 <select name="role" class="role-select role-<?php echo $u['role']; ?>" onchange="this.form.submit()">
-                                    <option value="volunteer" <?php echo $u['role'] === 'volunteer' ? 'selected' : ''; ?>>Student</option>
-                                    <option value="mentor" <?php echo $u['role'] === 'mentor' ? 'selected' : ''; ?>>Instructor</option>
+                                    <option value="student" <?php echo $u['role'] === 'student' ? 'selected' : ''; ?>>Student</option>
+                                    <option value="instructor" <?php echo $u['role'] === 'instructor' ? 'selected' : ''; ?>>Instructor</option>
                                     <option value="admin" <?php echo $u['role'] === 'admin' ? 'selected' : ''; ?>>Admin</option>
                                 </select>
                             </form>
@@ -418,8 +453,8 @@ $activePage = 'users';
     cursor: pointer;
 }
 
-.role-select.role-volunteer { background: #dbeafe; color: #2563eb; }
-.role-select.role-mentor { background: var(--primary-50); color: var(--primary); }
+.role-select.role-student { background: #dbeafe; color: #2563eb; }
+.role-select.role-instructor { background: var(--primary-50); color: var(--primary); }
 .role-select.role-admin { background: #fee2e2; color: #dc2626; }
 
 .btn-danger {

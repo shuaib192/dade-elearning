@@ -123,7 +123,7 @@ require_once APP_ROOT . '/views/layouts/header.php';
                         <label class="form-label">I want to:</label>
                         <div class="role-selector">
                             <label class="role-option">
-                                <input type="radio" name="role" value="volunteer" checked>
+                                <input type="radio" name="role" value="student" checked>
                                 <div class="role-card">
                                     <i class="fas fa-user-graduate"></i>
                                     <span class="role-title">Learn</span>
@@ -131,7 +131,7 @@ require_once APP_ROOT . '/views/layouts/header.php';
                                 </div>
                             </label>
                             <label class="role-option">
-                                <input type="radio" name="role" value="mentor">
+                                <input type="radio" name="role" value="instructor">
                                 <div class="role-card">
                                     <i class="fas fa-chalkboard-teacher"></i>
                                     <span class="role-title">Teach</span>

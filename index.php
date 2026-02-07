@@ -22,6 +22,7 @@ require_once APP_ROOT . '/core/Router.php';
 require_once APP_ROOT . '/core/Session.php';
 require_once APP_ROOT . '/core/Auth.php';
 require_once APP_ROOT . '/core/Mail.php';
+require_once APP_ROOT . '/core/Notification.php';
 require_once APP_ROOT . '/core/helpers.php';
 
 // Start session
@@ -386,6 +387,17 @@ Router::get('certificate/{id}/download', function($id) {
 Router::get('verify-certificate', function() {
     require_once APP_ROOT . '/controllers/CertificateController.php';
     (new CertificateController())->verify();
+});
+
+// --- Notification Routes ---
+Router::get('notifications/mark-all-read', function() {
+    Auth::requireLogin();
+    Notification::markAllAsRead(Auth::id());
+    if (isset($_SERVER['HTTP_REFERER'])) {
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
+    } else {
+        Router::redirect('dashboard');
+    }
 });
 
 // ============================================================================

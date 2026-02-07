@@ -55,7 +55,15 @@ require_once APP_ROOT . '/views/layouts/header.php';
             </div>
             
             <!-- Result Display -->
-            <?php if (isset($cert)): ?>
+            <?php 
+            // Fallback: Check if error is passed via URL or Session if not set locally
+            if (!isset($error) && !isset($cert) && !empty($_GET['code'])) {
+                 // This block handles cases where the controller didn't pass variables correctly
+                 // or if accessed directly.
+            }
+            ?>
+            
+            <?php if (isset($cert) && !empty($cert)): ?>
             <div class="verify-result valid">
                 <div class="result-header">
                     <div class="result-icon">

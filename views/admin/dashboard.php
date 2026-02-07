@@ -118,7 +118,7 @@ $activePage = 'dashboard';
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="role-info">
-                        <strong><?php echo number_format($roleStats['volunteer'] ?? 0); ?></strong>
+                        <strong><?php echo number_format($roleStats['student'] ?? 0); ?></strong>
                         <span>Students</span>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ $activePage = 'dashboard';
                         <i class="fas fa-chalkboard-teacher"></i>
                     </div>
                     <div class="role-info">
-                        <strong><?php echo number_format($roleStats['mentor'] ?? 0); ?></strong>
+                        <strong><?php echo number_format($roleStats['instructor'] ?? 0); ?></strong>
                         <span>Instructors</span>
                     </div>
                 </div>
@@ -551,12 +551,12 @@ $activePage = 'dashboard';
     letter-spacing: 0.3px;
 }
 
-.role-volunteer {
+.role-student {
     background: #dbeafe;
     color: #2563eb;
 }
 
-.role-mentor {
+.role-instructor {
     background: var(--primary-50);
     color: var(--primary);
 }

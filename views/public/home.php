@@ -23,10 +23,10 @@ try {
     $result = $db->query("SELECT COUNT(*) as cnt FROM courses WHERE status = 'published'");
     if ($result) $stats['courses'] = $result->fetch_assoc()['cnt'] ?: 50;
     
-    $result = $db->query("SELECT COUNT(*) as cnt FROM users WHERE role = 'volunteer'");
+    $result = $db->query("SELECT COUNT(*) as cnt FROM users WHERE role = 'student'");
     if ($result) $stats['students'] = $result->fetch_assoc()['cnt'] ?: 1000;
     
-    $result = $db->query("SELECT COUNT(*) as cnt FROM users WHERE role = 'mentor'");
+    $result = $db->query("SELECT COUNT(*) as cnt FROM users WHERE role = 'instructor'");
     if ($result) $stats['instructors'] = $result->fetch_assoc()['cnt'] ?: 25;
     
     // Certificate query with table existence check

@@ -14,20 +14,23 @@
                         Empowering learners worldwide with quality education and inclusive innovation.
                     </p>
                     <div class="footer-social">
-                        <a href="#" class="social-link" title="Facebook">
+                        <a href="https://www.facebook.com/dadefoundationng" target="_blank" class="social-link" title="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="social-link" title="Twitter">
-                            <i class="fab fa-twitter"></i>
+                        <a href="https://x.com/DADEFoundation" target="_blank" class="social-link" title="X (Twitter)">
+                            <i class="fab fa-x-twitter"></i>
                         </a>
-                        <a href="#" class="social-link" title="LinkedIn">
+                        <a href="https://www.linkedin.com/company/dadefoundation/" target="_blank" class="social-link" title="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
-                        <a href="#" class="social-link" title="YouTube">
+                        <a href="https://www.youtube.com/@DADEFoundation" target="_blank" class="social-link" title="YouTube">
                             <i class="fab fa-youtube"></i>
                         </a>
-                        <a href="#" class="social-link" title="Instagram">
+                        <a href="https://www.instagram.com/dadefoundation/" target="_blank" class="social-link" title="Instagram">
                             <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@dadefoundation" target="_blank" class="social-link" title="TikTok">
+                            <i class="fab fa-tiktok"></i>
                         </a>
                     </div>
                 </div>
@@ -57,15 +60,26 @@
                     </ul>
                 </div>
                 
-                <!-- Support Links -->
+                <!-- Contact Info -->
                 <div class="footer-links">
-                    <h4 class="footer-title">Support</h4>
-                    <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
+                    <h4 class="footer-title">Contact Info</h4>
+                    <ul class="contact-list">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Inclusion Hub, Off Sokenu Road, Abeokuta, Ogun state</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:inclusion@dadefoundation.com">inclusion@dadefoundation.com</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <span>09057299917</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <span>09061843499, 09037648755</span>
+                        </li>
                     </ul>
                 </div>
             </div>

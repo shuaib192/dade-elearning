@@ -232,4 +232,44 @@ class Mail {
         
         return self::send($user['email'], $subject, $body);
     }
+    
+    /**
+     * Send instructor approval email
+     */
+    public static function sendInstructorApproval($user) {
+        $loginUrl = SITE_URL . '/login';
+        $dashboardUrl = SITE_URL . '/instructor';
+        
+        $body = '
+            <h2 style="color:#005f73; margin:0 0 20px;">You are now an Instructor! 🎉</h2>
+            <p>Dear ' . htmlspecialchars($user['username']) . ',</p>
+            <p>We are thrilled to inform you that your application to become an instructor on ' . SITE_NAME . ' has been <strong>APPROVED</strong>!</p>
+            <p>You can now access the Instructor Dashboard to create courses, manage students, and track your performance.</p>
+            
+            <p style="text-align:center; margin: 30px 0;">
+                <a href="' . $dashboardUrl . '" style="display:inline-block; padding:14px 32px; background:#005f73; color:#ffffff; text-decoration:none; border-radius:8px; font-weight:600;">Go to Instructor Dashboard</a>
+            </p>
+            
+            <p>Welcome to the teaching community! We can\'t wait to see the knowledge you\'ll share.</p>
+        ';
+        
+        return self::send($user['email'], 'Instructor Application Approved! - ' . SITE_NAME, $body);
+    }
+    
+    /**
+     * Send instructor rejection email
+     */
+    public static function sendInstructorRejection($user) {
+        $body = '
+            <h2 style="color:#005f73; margin:0 0 20px;">Update on your Instructor Application</h2>
+            <p>Dear ' . htmlspecialchars($user['username']) . ',</p>
+            <p>Thank you for your interest in becoming an instructor on ' . SITE_NAME . '.</p>
+            <p>After careful review, we regret to inform you that we are unable to approve your application at this time.</p>
+            <p>This decision may be due to incomplete profile information or specific qualification requirements. We encourage you to improve your profile and apply again in the future.</p>
+            
+            <p>If you have any questions, please contact our support team.</p>
+        ';
+        
+        return self::send($user['email'], 'Instructor Application Update - ' . SITE_NAME, $body);
+    }
 }
